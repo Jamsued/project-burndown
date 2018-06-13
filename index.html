@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello World</title>
+  <!-- Plotly.js -->
+   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+</head>
+
+<p>This is a test</p>
+
+<input type="file" id="myFile" multiple size="50" onchange="myFunction()">
+
+<p id="demo"></p>
+
+  <div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
+<p>This is now done</p>
+
+  <script>
+
+
+function myFunction(){
+    var x = document.getElementById("myFile");
+    var txt = "";
+    if ('files' in x) {
+        if (x.files.length == 0) {
+            txt = "Select one or more files.";
+        } else {
+            for (var i = 0; i < x.files.length; i++) {
+                txt += "<br><strong>" + (i+1) + ". file</strong><br>";
+                var file = x.files[i];
+                if ('name' in file) {
+                    txt += "name: " + file.name + "<br>";
+                }
+                if ('size' in file) {
+                    txt += "size: " + file.size + " bytes <br>";
+                }
+
+            var reader = new FileReader();
+            reader.readAsText(file)
+
+reader.onload = function(e) { 
+    var rawLog = reader.result;
+    console.log(rawLog);
+
+   var line = rawLog.split(";");
+
+   var com = []
+
+   for (i=0; i<line.length;i++) {
+
+      com.push(line[i].split(","))
+
+   }
+
+   // var txt = com [1][0] // First is row. Second is collum. Starts at 0
+
+    var xArray = []
+    for (i=1; i<com.length;i++) {
+      xArray.push(com[i][0])
+    }
+
+    var newdata = []
+    for (i=1; i<com[0].length;i++) {
+
+      var yArray = []
+      for (j=1; j<com.length;j++) {
+      yArray.push(com[j][i])
+      }
+
+    var plotname = []
+    for (k=4; k<com.length;k++) {
+      plotname.push(com[0][i])
+    }
+
+    var epicGraph = {
+    x: xArray,
+    y: yArray,
+    name: `${plotname}`,
+    mode: 'lines+markers'
+    };
+
+    newdata.push(epicGraph)
+
+
+    }
+
+
+  // THE ABOVE IS A RESET VALUES TEST
+
+  Plotly.newPlot('myDiv', newdata, layout);
+
+
+    // I want to find a way to get the above value into the array presented in 'data' (or newdata depending on how I do this) further down.
+
+    // Maybe once the file is uploaded and the data is sorted I can make it automatically update the graph. I just need to figure out how I can change those values in the array from the
+    // uploaded CSV file.
+
+    var MrDataMan = com [1][0]
+
+    document.getElementById("demo").innerHTML = txt;
+
+}
+
+            }
+        }
+    } 
+    else {
+        if (x.value == "") {
+            txt += "Select one or more files.";
+        } else {
+            txt += "The files property is not supported by your browser!";
+            txt  += "<br>The path of the selected file: " + x.value; // If the browser does not support the files property, it will return the path of the selected file instead. 
+        }
+    }
+    document.getElementById("demo").innerHTML = txt;
+}
+
+var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  mode: 'markers'
+};
+
+var trace2 = {
+  x: [2, 3, 4, 5],
+  y: [16, 5, 11, 10],
+  mode: 'lines'
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4],
+  y: [12, 9, 15, 12],
+  mode: 'lines+markers'
+};
+
+var data = [ trace1, trace2, trace3 ];
+
+var layout = {
+  title: 'Epic Graph',
+  xaxis: {
+    title: 'Week'
+  },
+  yaxis: {
+    title: 'Story Points'
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout);
+
+  </script>
+
+</html>
+
+
